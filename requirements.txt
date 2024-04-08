@@ -1,0 +1,21 @@
+# General
+beautifulsoup4
+ipython
+
+# Data Science
+numpy
+pandas
+rouge-score
+
+# Anthropic
+anthropic
+
+# Google AI Studio
+google-generativeai
+
+# Google Cloud
+google-cloud-aiplatform
+google-cloud-bigquery
+
+# OpenAI
+openai
