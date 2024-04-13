@@ -4,21 +4,6 @@ from model import Model
 
 models = [
     Model(
-        model_family="Gemini",
-        model_version="gemini-1.0-pro",
-        service="Google AI Studio",
-        max_output_tokens=2048),
-    Model(
-        model_family="Gemini",
-        model_version="gemini-1.0-pro-001",
-        service="Google Cloud",
-        max_output_tokens=2048,
-        temperature=0.8,
-        top_k=40,
-        top_p=1)
-]
-models = [
-    Model(
         model_family="Claude",
         model_version="claude-3-haiku-20240307",
         service="Anthropic",
@@ -65,23 +50,6 @@ models = [
         service="Open AI",
         temperature=1.0)
 ]
-
-'''
-evals = [
-    Eval(
-        description="Basic math",
-        prompt="1+2=",
-        expected_response="3",
-        eval_type="perfect_exact_match"
-    ),
-    Eval(
-        description="Basic stats",
-        prompt="I have two red balls and two blue balls. You take one blue ball away. How many balls do I have left? Just provide a numeric digit response (no text).",
-        expected_response="3",
-        eval_type="perfect_exact_match"
-    )
-]
-'''
 
 evals = BSD_Evals(models=models, test_eval_file="./evals/test_evals.json")
 evals.run()

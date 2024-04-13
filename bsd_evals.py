@@ -1,5 +1,6 @@
 from eval import Eval
 from model import Model
+from databases.bigquery_class import BigQueryClass
 from services.anthropic_class import AnthropicClass
 from services.google_ai_studio_class import GoogleAIStudioClass
 from services.google_cloud_class import GoogleCloudClass
@@ -161,6 +162,8 @@ class BSD_Evals:
       self._eval_case_insensitive_match(response, eval, model_index, eval_index)
     elif eval.eval_type[:5] == "rouge":
       self._eval_rouge_score(response, eval, model_index, eval_index)
+    elif eval.eval_type == "sql_generation_results":
+      self._eval_sql_generation_results(response, eval, model_index, eval_index)
     else:
       print(f"Invalid evaluation type. Skipping...")
 
@@ -393,6 +396,38 @@ class BSD_Evals:
     score = scores[rouge_type][2]
     self.results_matrix[eval_index][model_index] = score
     return score
+  
+  def _eval_sql_generation_results(
+      self,
+      query,
+      eval,
+      model_index,
+      eval_index) -> bool:
+    """Evaluation method: SQL generation results.
+
+    Runs SQL query and compares the results to the expected results.
+    """
+    # Clean previously generated model response for known issues.
+    # This is an in-line hack and should be improved.
+    query = query.replace("```sql", "") \
+                        .replace("```", "") \
+                        .replace("```bigquery", "")
+    print(f"Cleaned SQL to execute: {query}")
+
+    if eval.attributes['database'] == "BigQuery":
+      # Execute SQL
+      query_result = BigQueryClass().run_query(query)
+      print(f"Database query result: {query_result}")
+      eval_perfect_match = self._eval_perfect_match(
+          query_result,
+          eval,
+          model_index,
+          eval_index)
+      return eval_perfect_match
+    else:
+      print(f"Invalid database type. Skipping...")
+
+    return False
 
   def _init_results_matrix(self) -> None:
     """Initialize results matrix shape and set all values to zero."""
